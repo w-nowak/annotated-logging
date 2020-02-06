@@ -1,7 +1,6 @@
 package com.wnowakcraft.logging;
 
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,14 +17,25 @@ public class LogAspect {
     @Pointcut("execution(* *(..))")
     public static void anyMethod() { }
 
+    @Pointcut("execution(!void *(..))")
+    public static void anyMethodReturningSomeResult() { }
+
+    @Pointcut("execution(void *(..))")
+    public static void anyMethodReturningNoResult() { }
+
     @Before("anyMethod() && @annotation(logBefore)")
     public void logBefore(LogBefore logBefore, JoinPoint joinPoint) {
         doLog(logBefore.value(), logBefore.level(), joinPoint);
     }
 
-    @After("anyMethod() && @annotation(logAfter)")
+    @After("anyMethodReturningNoResult() && @annotation(logAfter)")
     public void logAfter(LogAfter logAfter, JoinPoint joinPoint) {
         doLog(logAfter.value(), logAfter.level(), joinPoint);
+    }
+
+    @AfterReturning(value = "anyMethodReturningSomeResult() && @annotation(logAfter)", returning = "result")
+    public void logAfterResult(LogAfter logAfter, JoinPoint joinPoint, Object result) {
+        doLogWithResult(logAfter.value(), logAfter.level(), joinPoint, result);
     }
 
     @Before("anyMethod() && @annotation(logBeforeEntries)")
@@ -35,20 +45,32 @@ public class LogAspect {
         }
     }
 
-    @After("anyMethod() && @annotation(logAfterEntries)")
+    @After("anyMethodReturningNoResult() && @annotation(logAfterEntries)")
     public void logAfterEntries(LogAfterEntries logAfterEntries, JoinPoint joinPoint) {
         for(LogAfter logAfter : logAfterEntries.value()) {
             doLog(logAfter.value(), logAfter.level(), joinPoint);
         }
     }
 
+    @AfterReturning(value = "anyMethodReturningSomeResult() && @annotation(logAfterEntries)", returning = "result")
+    public void logAfterEntriesResult(LogAfterEntries logAfterEntries, JoinPoint joinPoint, Object result) {
+        for(LogAfter logAfter : logAfterEntries.value()) {
+            doLogWithResult(logAfter.value(), logAfter.level(), joinPoint, result);
+        }
+    }
+
     private void doLog(String logMessageTemplate, Level level, JoinPoint joinPoint) {
+        Object noResult = null;
+        doLogWithResult(logMessageTemplate, level, joinPoint, noResult);
+    }
+
+    private void doLogWithResult(String logMessageTemplate, Level level, JoinPoint joinPoint, Object result) {
         try {
 
             var logger = getLogger(joinPoint.getTarget());
 
             var logMessageParamsResolver = LogMessageParamsResolver.forMessageTemplate(logMessageTemplate);
-            Object[] logMessageParams = logMessageParamsResolver.getParamsReferredInTemplate(joinPoint.getArgs());
+            Object[] logMessageParams = logMessageParamsResolver.getParamsReferredInTemplate(joinPoint.getArgs(), result);
             String cleanLogMessagePattern = logMessageParamsResolver.getCleanLogMessageTemplate();
 
             level.log(logger, cleanLogMessagePattern, logMessageParams);
