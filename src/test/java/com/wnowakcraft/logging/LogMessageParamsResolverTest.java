@@ -14,7 +14,7 @@ class LogMessageParamsResolverTest {
     private static final TestPerson TEST_PERSON_1 = new TestPerson("testPerson1");
     private static final TestPerson TEST_PERSON_2 = new TestPerson("testPerson2");
     private static final int TEST_PERSON_2_INDEX = 1;
-    private static final List<TestPerson> TEST_TWO_PERSONS =List.of(TEST_PERSON_1, TEST_PERSON_2);
+    private static final List<TestPerson> TEST_TWO_PERSONS = List.of(TEST_PERSON_1, TEST_PERSON_2);
     private static final int TEST_PERSON_1_INDEX = 0;
 
     @Test
