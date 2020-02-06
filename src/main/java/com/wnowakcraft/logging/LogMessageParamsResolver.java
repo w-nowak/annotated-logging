@@ -74,7 +74,7 @@ class LogMessageParamsResolver {
                 return jexlExpression.evaluate(contextParams);
             } catch (JexlException.Variable ex) {
                 if(ex.isUndefined() || ex.getMessage().contains("null value variable")) {
-                    return "<no_value>";
+                    return null;
                 }
 
                 throw ex;

@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.Optional;
 
+import static java.util.Optional.empty;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class LogMessageParamsResolverTest {
@@ -71,7 +72,7 @@ class LogMessageParamsResolverTest {
 
         assertThat(resolvedParams).hasSize(2);
         assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_1);
-        assertThat(resolvedParams[1]).isEqualTo("<no_value>");
+        assertThat(resolvedParams[1]).isNull();
     }
 
     @Test
@@ -80,11 +81,11 @@ class LogMessageParamsResolverTest {
         var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
 
         Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
-                new Object[] {TEST_PERSON_1, TEST_PERSON_2_INDEX }, Optional.empty());
+                new Object[] {TEST_PERSON_1, TEST_PERSON_2_INDEX }, empty());
 
         assertThat(resolvedParams).hasSize(2);
         assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_2_INDEX);
-        assertThat(resolvedParams[1]).isEqualTo("<no_value>");
+        assertThat(resolvedParams[1]).isNull();
     }
 
     @Test
@@ -92,7 +93,7 @@ class LogMessageParamsResolverTest {
         String messageTemplate = "Input: {p0.getName()}, {p1.getName()}, {p0}, Result = { r.getName() }";
         var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
         var optionalParam = Optional.of(TEST_PERSON_1);
-        var optionalEmptyParam = Optional.empty();
+        var optionalEmptyParam = empty();
         var optionalResult = Optional.of(TEST_PERSON_2);
 
         Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
@@ -100,9 +101,25 @@ class LogMessageParamsResolverTest {
 
         assertThat(resolvedParams).hasSize(4);
         assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_1.getName());
-        assertThat(resolvedParams[1]).isEqualTo("<no_value>");
+        assertThat(resolvedParams[1]).isNull();
         assertThat(resolvedParams[2]).isEqualTo(TEST_PERSON_1);
         assertThat(resolvedParams[3]).isEqualTo(TEST_PERSON_2.getName());
+    }
+
+    @Test
+    void correctlyResolvesParamsFromMessageTemplate_withNullParamsInTheMiddleOfExpression_nullValueIsReturned() {
+        String messageTemplate = "Input: {p0.getTestPerson().getName()}, {p1.name.toString()}, Result = { r.getTestPerson().getName() }";
+        var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
+        var personWithNoName = new TestPerson(null);
+        var wrapperWithNoPerson = new OptionalWrapper(null);
+
+        Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
+                new Object[] { wrapperWithNoPerson, personWithNoName }, wrapperWithNoPerson);
+
+        assertThat(resolvedParams).hasSize(3);
+        assertThat(resolvedParams[0]).isNull();
+        assertThat(resolvedParams[1]).isNull();
+        assertThat(resolvedParams[2]).isNull();
     }
 
     @Test
@@ -125,6 +142,13 @@ class LogMessageParamsResolverTest {
                 new Object[] { "some string",  2, new Object() }, NO_RETURN_VALUE);
 
         assertThat(resolvedParams).isEmpty();
+    }
+
+
+    @Getter
+    @RequiredArgsConstructor
+    public static class OptionalWrapper {
+        private final TestPerson testPerson;
     }
 
     @Getter
