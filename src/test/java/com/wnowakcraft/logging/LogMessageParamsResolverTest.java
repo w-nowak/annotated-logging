@@ -63,14 +63,14 @@ class LogMessageParamsResolverTest {
 
     @Test
     void correctlyResolvesParamsFromMessageTemplate_withNullableReturnValue_whenReferredInTemplateButNull() {
-        String messageTemplate = "Input: {p2}, Result = { r.getName() }";
+        String messageTemplate = "Input: {p0}, Result = { r.getName() }";
         var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
 
         Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
-                new Object[] {TEST_PERSON_1, new TestSuggestions(TEST_TWO_PERSONS), TEST_PERSON_2_INDEX }, NO_RETURN_VALUE);
+                new Object[] {TEST_PERSON_1 }, NO_RETURN_VALUE);
 
         assertThat(resolvedParams).hasSize(2);
-        assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_2_INDEX);
+        assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_1);
         assertThat(resolvedParams[1]).isEqualTo("<no_value>");
     }
 
@@ -85,6 +85,22 @@ class LogMessageParamsResolverTest {
         assertThat(resolvedParams).hasSize(2);
         assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_2_INDEX);
         assertThat(resolvedParams[1]).isEqualTo("<no_value>");
+    }
+
+    @Test
+    void correctlyResolvesParamsFromMessageTemplate_withOptionalParamsAndReturnValue_OptionalValueIsExtracted() {
+        String messageTemplate = "Input: {p0.getName()}, {p0}, Result = { r.getName() }";
+        var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
+        var optionalParam = Optional.of(TEST_PERSON_1);
+        var optionalResult = Optional.of(TEST_PERSON_2);
+
+        Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
+                new Object[] { optionalParam }, optionalResult);
+
+        assertThat(resolvedParams).hasSize(3);
+        assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_1.getName());
+        assertThat(resolvedParams[1]).isEqualTo(TEST_PERSON_1);
+        assertThat(resolvedParams[2]).isEqualTo(TEST_PERSON_2.getName());
     }
 
     @Test

@@ -49,12 +49,17 @@ class LogMessageParamsResolver {
 
         ExpressionResolver(Object[] expressionContextParams, Object result) {
             for(var i = 0; i< expressionContextParams.length; i++) {
-                contextParams.set(PARAM + i, expressionContextParams[i]);
+                contextParams.set(PARAM + i, getValueFrom(expressionContextParams[i]));
             }
 
             if(result != null) {
-                contextParams.set(RESULT, result);
+                contextParams.set(RESULT, getValueFrom(result));
             }
+        }
+
+        private static Object getValueFrom(Object result) {
+            return result instanceof Optional ?
+            ((Optional)result).orElse(null) : result;
         }
 
         Object resolve(String expression) {
@@ -71,8 +76,7 @@ class LogMessageParamsResolver {
         }
 
         private boolean isResultValueMissing() {
-            Object result = contextParams.get(RESULT);
-            return result == null || (result instanceof Optional && ((Optional)result).isEmpty());
+            return contextParams.get(RESULT) == null;
         }
     }
 }
