@@ -76,7 +76,7 @@ class LogMessageParamsResolverTest {
 
     @Test
     void correctlyResolvesParamsFromMessageTemplate_withNullableReturnValue_whenReferredInTemplateButEmptyOptional() {
-        String messageTemplate = "Input: {p1}, Result = { r.get().getName() }";
+        String messageTemplate = "Input: {p1}, Result = { r.getName() }";
         var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
 
         Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
@@ -89,18 +89,20 @@ class LogMessageParamsResolverTest {
 
     @Test
     void correctlyResolvesParamsFromMessageTemplate_withOptionalParamsAndReturnValue_OptionalValueIsExtracted() {
-        String messageTemplate = "Input: {p0.getName()}, {p0}, Result = { r.getName() }";
+        String messageTemplate = "Input: {p0.getName()}, {p1.getName()}, {p0}, Result = { r.getName() }";
         var logMessageParamsResolver= new LogMessageParamsResolver(messageTemplate);
         var optionalParam = Optional.of(TEST_PERSON_1);
+        var optionalEmptyParam = Optional.empty();
         var optionalResult = Optional.of(TEST_PERSON_2);
 
         Object[] resolvedParams = logMessageParamsResolver.getParamsReferredInTemplate(
-                new Object[] { optionalParam }, optionalResult);
+                new Object[] { optionalParam, optionalEmptyParam }, optionalResult);
 
-        assertThat(resolvedParams).hasSize(3);
+        assertThat(resolvedParams).hasSize(4);
         assertThat(resolvedParams[0]).isEqualTo(TEST_PERSON_1.getName());
-        assertThat(resolvedParams[1]).isEqualTo(TEST_PERSON_1);
-        assertThat(resolvedParams[2]).isEqualTo(TEST_PERSON_2.getName());
+        assertThat(resolvedParams[1]).isEqualTo("<no_value>");
+        assertThat(resolvedParams[2]).isEqualTo(TEST_PERSON_1);
+        assertThat(resolvedParams[3]).isEqualTo(TEST_PERSON_2.getName());
     }
 
     @Test

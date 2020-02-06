@@ -2,6 +2,7 @@ package com.wnowakcraft.logging;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.jexl3.JexlBuilder;
+import org.apache.commons.jexl3.JexlException;
 import org.apache.commons.jexl3.MapContext;
 
 import java.util.LinkedList;
@@ -63,20 +64,21 @@ class LogMessageParamsResolver {
         }
 
         Object resolve(String expression) {
-            if(isReturnValueReferredIn(expression) && isResultValueMissing()) {
-                return "<no_value>";
-            }
+            return evaluateWithPossibleNullValues(expression);
+        }
 
+        private Object evaluateWithPossibleNullValues(String expression) {
             var jexlExpression = new JexlBuilder().create().createExpression(expression.trim());
-            return jexlExpression.evaluate(contextParams);
-        }
 
-        private static boolean isReturnValueReferredIn(String expression) {
-            return expression.trim().startsWith(RESULT + ".");
-        }
+            try {
+                return jexlExpression.evaluate(contextParams);
+            } catch (JexlException.Variable ex) {
+                if(ex.isUndefined() || ex.getMessage().contains("null value variable")) {
+                    return "<no_value>";
+                }
 
-        private boolean isResultValueMissing() {
-            return contextParams.get(RESULT) == null;
+                throw ex;
+            }
         }
     }
 }
