@@ -7,6 +7,7 @@ import org.apache.commons.jexl3.MapContext;
 
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
@@ -48,6 +49,8 @@ class LogMessageParamsResolver {
     static class ExpressionResolver {
         private static final String PARAM = "p";
         private static final String RESULT = "r";
+        private static final Pattern STARTS_WITH_PARAM_OR_RETURN_VALUE_MARKER =
+                Pattern.compile("^" + PARAM_OR_RETURN_VALUE_MARKER);
         private final MapContext contextParams = new MapContext();
 
         ExpressionResolver(Object[] expressionContextParams, Object result) {
@@ -66,11 +69,15 @@ class LogMessageParamsResolver {
         }
 
         Object resolve(String expression) {
-            return evaluateWithPossibleNullValues(expression);
+            return evaluateWithPossibleNullValues(expression.trim());
         }
 
         private Object evaluateWithPossibleNullValues(String expression) {
-            var jexlExpression = new JexlBuilder().create().createExpression(expression.trim());
+            if(hasNullExpressionRootParam(expression)) {
+                return null;
+            }
+
+            var jexlExpression = new JexlBuilder().create().createExpression(expression);
 
             try {
                 return jexlExpression.evaluate(contextParams);
@@ -81,6 +88,17 @@ class LogMessageParamsResolver {
 
                 throw ex;
             }
+        }
+
+        private boolean hasNullExpressionRootParam(String expression) {
+            Matcher expressionRootParamMatcher = STARTS_WITH_PARAM_OR_RETURN_VALUE_MARKER.matcher(expression);
+
+            if(expressionRootParamMatcher.find()) {
+                var exprRootParamName = expressionRootParamMatcher.group();
+                return contextParams.has(exprRootParamName) && contextParams.get(exprRootParamName) == null;
+            }
+
+            return false;
         }
     }
 }
