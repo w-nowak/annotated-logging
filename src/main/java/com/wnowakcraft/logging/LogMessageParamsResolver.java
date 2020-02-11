@@ -13,11 +13,13 @@ import java.util.regex.Pattern;
 class LogMessageParamsResolver {
     private static final String PARAM_START = "\\{";
     private static final String ANY_SPACES = "\\s*";
-    private static final String PARAM_OR_RETURN_VALUE_MARKER = "((?:p\\d+|r)";
-    private static final String ANY_MEMBER_EXPRESSION = "(\\.[\\w\\[\\]\\(\\)]+)*)";
+    private static final String EXPR_START = "(";
+    private static final String PARAM_OR_RETURN_VALUE_MARKER = "(?:p\\d+|r)";
+    public static final String EXPR_END = ")";
+    private static final String ANY_MEMBER_EXPRESSION = "(\\.[\\w\\[\\]\\(\\)]+)*";
     private static final String PARAM_END = "}";
     private static final Pattern MESSAGE_PARAMS_PATTERN = Pattern.compile(
-            PARAM_START + ANY_SPACES + PARAM_OR_RETURN_VALUE_MARKER + ANY_MEMBER_EXPRESSION + ANY_SPACES + PARAM_END
+            PARAM_START + ANY_SPACES + EXPR_START + PARAM_OR_RETURN_VALUE_MARKER + ANY_MEMBER_EXPRESSION+ EXPR_END + ANY_SPACES + PARAM_END
     );
     private final String messageTemplate;
 
