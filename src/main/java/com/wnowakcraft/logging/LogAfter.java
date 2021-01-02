@@ -7,5 +7,5 @@ import java.lang.annotation.*;
 @Repeatable(LogAfterEntries.class)
 public @interface LogAfter {
     String value();
-    Level level() default Level.INFO;
+    Level level() default Level.DEBUG;
 }

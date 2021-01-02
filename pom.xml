@@ -6,7 +6,7 @@
 
     <groupId>com.wnowakcraft</groupId>
     <artifactId>annoteted-logging</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.2-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.relese>11</maven.compiler.relese>
