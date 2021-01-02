@@ -21,7 +21,7 @@ public enum Level {
     },
     DEBUG {
         void log(Logger logger, String message, Object... parameters) {
-            logger.info(message, parameters);
+            logger.debug(message, parameters);
         }
     };
 
