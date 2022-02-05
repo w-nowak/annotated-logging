@@ -15,6 +15,8 @@
         <maven.compiler.target>${java.version}</maven.compiler.target>
         <junit-jupiter.version>5.5.0</junit-jupiter.version>
         <aspectj.version>1.9.5</aspectj.version>
+        <aspectj.verbose>true</aspectj.verbose>
+        <aspectj.showWaveInfo>true</aspectj.showWaveInfo>
         <slf4j-api.version>2.0.0-alpha1</slf4j-api.version>
     </properties>
 
@@ -86,8 +88,8 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                     <complianceLevel>${maven.compiler.target}</complianceLevel>
-                    <showWeaveInfo>true</showWeaveInfo>
-                    <verbose>true</verbose>
+                    <showWeaveInfo>${aspectj.showWaveInfo}</showWeaveInfo>
+                    <verbose>${aspectj.verbose}</verbose>
                     <Xlint>ignore</Xlint>
                     <encoding>UTF-8</encoding>
                     <forceAjcCompile>true</forceAjcCompile>
