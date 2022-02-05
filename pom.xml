@@ -16,7 +16,6 @@
         <junit-jupiter.version>5.5.0</junit-jupiter.version>
         <aspectj.version>1.9.5</aspectj.version>
         <aspectj.verbose>true</aspectj.verbose>
-        <aspectj.showWaveInfo>true</aspectj.showWaveInfo>
         <slf4j-api.version>2.0.0-alpha1</slf4j-api.version>
     </properties>
 
@@ -41,6 +40,7 @@
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>${aspectj.version}</version>
+            <scope>provided</scope>
         </dependency>
 
         <!-- test dependencies -->
@@ -88,18 +88,18 @@
                     <source>${maven.compiler.source}</source>
                     <target>${maven.compiler.target}</target>
                     <complianceLevel>${maven.compiler.target}</complianceLevel>
-                    <showWeaveInfo>${aspectj.showWaveInfo}</showWeaveInfo>
                     <verbose>${aspectj.verbose}</verbose>
                     <Xlint>ignore</Xlint>
                     <encoding>UTF-8</encoding>
                     <forceAjcCompile>true</forceAjcCompile>
-                    <sources/>
-                    <weaveDirectories>
+                    <sources/>                  <!-- configures to wave compile classes instead of source files -->
+                    <weaveDirectories>          <!-- just to avoid clashes with other source code pre-processing tools like Lombok -->
                         <weaveDirectory>${project.build.directory}/classes</weaveDirectory>
                     </weaveDirectories>
                 </configuration>
                 <executions>
                     <execution>
+                        <!-- compiles from classes as opposed to java source files -->
                         <phase>process-classes</phase>
                         <goals>
                             <goal>compile</goal>
