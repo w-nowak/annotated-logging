@@ -9,9 +9,10 @@
     <version>1.0.2-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.relese>11</maven.compiler.relese>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <java.version>11</java.version>
+        <maven.compiler.relese>${java.version}</maven.compiler.relese>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
         <junit-jupiter.version>5.5.0</junit-jupiter.version>
         <aspectj.version>1.9.5</aspectj.version>
         <slf4j-api.version>2.0.0-alpha1</slf4j-api.version>
@@ -78,13 +79,13 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>com.nickwongdev</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.12.6</version>
+                <version>1.14.0</version>
                 <configuration>
-                    <complianceLevel>11</complianceLevel>
-                    <source>11</source>
-                    <target>11</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <complianceLevel>${maven.compiler.target}</complianceLevel>
                     <showWeaveInfo>true</showWeaveInfo>
                     <verbose>true</verbose>
                     <Xlint>ignore</Xlint>
