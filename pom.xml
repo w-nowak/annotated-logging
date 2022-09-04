@@ -4,9 +4,36 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.wnowakcraft</groupId>
+    <name>Annotated-logging library</name>
+    <description>The library allows defining application logs at a method level</description>
+    <url>https://github.com/w-nowak/annotated-logging</url>
+    <licenses>
+        <license>
+            <name>The Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Wojciech Nowak</name>
+            <url>https://github.com/w-nowak</url>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:git://github.com/w-nowak/annotated-logging.git</connection>
+        <developerConnection>scm:git:ssh://github.com:w-nowak/annotated-logging.git</developerConnection>
+        <url>https://github.com/w-nowak/annotated-logging</url>
+    </scm>
+
+    <groupId>io.github.w-nowak.tools</groupId>
     <artifactId>annotated-logging</artifactId>
     <version>1.0.3-SNAPSHOT</version>
+
+    <parent>
+        <groupId>io.github.w-nowak.tools</groupId>
+        <artifactId>maven-central-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
 
     <properties>
         <java.version>11</java.version>
