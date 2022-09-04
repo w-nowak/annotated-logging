@@ -16,7 +16,7 @@ class LogMessageParamsResolver {
     private static final String ANY_SPACES = "\\s*";
     private static final String EXPR_START = "(";
     private static final String PARAM_OR_RETURN_VALUE_MARKER = "(?:p\\d+|r)";
-    public static final String EXPR_END = ")";
+    private static final String EXPR_END = ")";
     private static final String ANY_MEMBER_EXPRESSION = "(\\.[\\w\\[\\]\\(\\)]+)*";
     private static final String PARAM_END = "}";
     private static final Pattern MESSAGE_PARAMS_PATTERN = Pattern.compile(

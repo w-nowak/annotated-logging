@@ -9,35 +9,72 @@ import java.lang.reflect.Field;
 
 import static java.lang.reflect.Modifier.isStatic;
 
+/**
+ * Aspect defining pointcuts for log statements.
+ */
 @Aspect
 public class LogAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogAspect.class);
     private static final String LOG_FIELD_NAME = "log";
 
+    /**
+     * Pointcut of execution of any method.
+     */
     @Pointcut("execution(* *(..))")
     public static void anyMethod() { }
 
+    /**
+     * Pointcut of execution of any method returning a result.
+     */
     @Pointcut("execution(!void *(..))")
     public static void anyMethodReturningSomeResult() { }
 
+    /**
+     * Pointcut of execution of any method returning no result.
+     */
     @Pointcut("execution(void *(..))")
     public static void anyMethodReturningNoResult() { }
 
+    /**
+     * Pointcut of execution of any method with {@link LogBefore} annotation.
+     *
+     * @param logBefore found {@link LogBefore} annotation
+     * @param joinPoint join point when the annotation was found
+     */
     @Before("anyMethod() && @annotation(logBefore)")
     public void logBefore(LogBefore logBefore, JoinPoint joinPoint) {
         doLog(logBefore.value(), logBefore.level(), joinPoint);
     }
 
+    /**
+     * Pointcut of execution of any method returning no result with {@link LogAfter} annotation.
+     *
+     * @param logAfter found {@link LogAfter} annotation
+     * @param joinPoint join point when the annotation was found
+     */
     @After("anyMethodReturningNoResult() && @annotation(logAfter)")
     public void logAfter(LogAfter logAfter, JoinPoint joinPoint) {
         doLog(logAfter.value(), logAfter.level(), joinPoint);
     }
 
+    /**
+     * Pointcut of execution of any method returning a result with {@link LogAfter} annotation.
+     *
+     * @param logAfter found {@link LogAfter} annotation
+     * @param joinPoint join point when the annotation was found
+     * @param result result being returned by the annotated method
+     */
     @AfterReturning(value = "anyMethodReturningSomeResult() && @annotation(logAfter)", returning = "result")
     public void logAfterResult(LogAfter logAfter, JoinPoint joinPoint, Object result) {
         doLogWithResult(logAfter.value(), logAfter.level(), joinPoint, result);
     }
 
+    /**
+     * Pointcut of execution of any method with multiple {@link LogBefore} annotations.
+     *
+     * @param logBeforeEntries found {@link LogBeforeEntries} annotation containing multiple {@link LogBefore} annotations
+     * @param joinPoint join point when the annotation was found
+     */
     @Before("anyMethod() && @annotation(logBeforeEntries)")
     public void logBeforeEntries(LogBeforeEntries logBeforeEntries, JoinPoint joinPoint) {
         for(LogBefore logBefore : logBeforeEntries.value()) {
@@ -45,6 +82,12 @@ public class LogAspect {
         }
     }
 
+    /**
+     * Pointcut of execution of any method returning no result with multiple {@link LogAfter} annotations.
+     *
+     * @param logAfterEntries found {@link LogAfterEntries} annotation containing multiple {@link LogAfter} annotations
+     * @param joinPoint join point when the annotation was found
+     */
     @After("anyMethodReturningNoResult() && @annotation(logAfterEntries)")
     public void logAfterEntries(LogAfterEntries logAfterEntries, JoinPoint joinPoint) {
         for(LogAfter logAfter : logAfterEntries.value()) {
@@ -52,6 +95,12 @@ public class LogAspect {
         }
     }
 
+    /**
+     * Pointcut of execution of any method returning a result with multiple {@link LogAfter} annotations
+     * @param logAfterEntries found {@link LogAfterEntries} annotation containing multiple {@link LogAfter} annotations
+     * @param joinPoint join point when the annotation was found
+     * @param result result being returned by the annotated method
+     */
     @AfterReturning(value = "anyMethodReturningSomeResult() && @annotation(logAfterEntries)", returning = "result")
     public void logAfterEntriesResult(LogAfterEntries logAfterEntries, JoinPoint joinPoint, Object result) {
         for(LogAfter logAfter : logAfterEntries.value()) {
