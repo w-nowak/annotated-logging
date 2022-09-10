@@ -1,4 +1,4 @@
-# Annotated logging
+# Annotated logging v1.0.x
 Log statements at method level as annotations - don't pollute your business logic with log statements 
 
 

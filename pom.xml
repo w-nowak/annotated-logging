@@ -25,9 +25,8 @@
         <url>https://github.com/w-nowak/annotated-logging</url>
     </scm>
 
-    <groupId>io.github.w-nowak.tools</groupId>
     <artifactId>annotated-logging</artifactId>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.0.3</version>
 
     <parent>
         <groupId>io.github.w-nowak.tools</groupId>
